@@ -1,0 +1,7 @@
+photos.db
+build
+venv
+*.pyc
+
+*.xml
+.idea/

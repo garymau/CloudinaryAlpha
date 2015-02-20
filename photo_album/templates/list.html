@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load cloudinary %}
+{% load url from future %}
+
+{% block body %}
+  <h1>Welcome!</h1>
+  <h1>Your Images</h1>
+  <div class="photos">
+    <p>
+      Following are the images uploaded by you. You can also upload more pictures.
+
+      You can click on each picture to view its original size, and see more info about and additional transformations.
+      <a class="upload_link" href="{% url "photo_album.views.upload" %}">Upload Images...</a>
+    </p>
+    {% if not photos.exists %}
+      <p>No images were uploaded yet.</p>
+    {% endif %}
+    {% for photo in photos %}
+      <div class="photo">
+          <a href="{{ photo.image.url }}" target="_blank" class="public_id_link">
+            <div class='public_id'>{{ photo.image.public_id }} - {{ photo.title }}</div>
+            {% cloudinary photo.image consts.THUMBNAIL %}
+          </a>
+        <div class="less_info">
+          <a href="#" class="toggle_info">More transformations...</a>
+        </div>
+        <div class="more_info">
+          <a href="#" class="toggle_info">Hide transformations...</a>
+          <table class="thumbnails">
+            {% for sample in samples %}
+              <td>
+                <div class='thumbnail_holder'>
+                  <a target="_blank" href='{% cloudinary_url photo.image.public_id sample %}'>
+                    {% cloudinary photo.image SMALL_THUMBNAIL %}
+                  </a>
+                </div>
+                <br/>
+                <table class='info'>
+                  {% for key, value in sample.items %}
+                    <tr><td>{{ key }}:</td><td>{{ value }}</td></tr>
+                  {% endfor %}
+                </table>
+              </td>
+            {% endfor %}
+          </table>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
+{% block javascript %}
+  $(function () {
+    $('.toggle_info').click(function () {
+      $(this).closest('.photo').toggleClass('show_more_info');
+      return false;
+    });
+  });
+{% endblock %}
